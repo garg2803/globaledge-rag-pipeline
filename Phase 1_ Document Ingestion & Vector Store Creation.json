@@ -1,0 +1,322 @@
+{
+  "name": "Phase 1: Document Ingestion & Vector Store Creation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Phase 1: Document Ingestion (Local Files → Pinecone)\n\n**Before running:**\n1. Upload your 3 files via n8n Manage Files\n2. Copy each file path and paste into the corresponding Read node\n3. Add OpenAI and Pinecone credentials\n4. Make sure Pinecone index \"globaledge-rag\" exists\n\n**Files needed:**\n- global_news.csv\n- stock_price_details.csv\n- sec_filings_10q.pdf",
+        "height": 200,
+        "width": 300,
+        "color": 3
+      },
+      "id": "53e3fb9b-d70c-440f-a6fb-55a6b0ecf390",
+      "name": "Sticky Note 68087b30",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "0eff31e5-9ce9-4930-8a25-a7ca8075e877",
+      "name": "Start Ingestion",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/global_news.csv",
+        "options": {}
+      },
+      "id": "248a94e8-60ee-4886-b3d4-f931ac71bbf3",
+      "name": "Read global_news.csv",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "globaledge-rag"
+        },
+        "options": {}
+      },
+      "id": "c53fb0d1-4e5f-4750-bd18-2f39bdd1a48e",
+      "name": "Ingest News to Pinecone",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        16
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "MacUSoeaKEvskiAp",
+          "name": "PineconeApi account 791"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1536
+        }
+      },
+      "id": "835ccc13-9101-4424-9ce8-ef799947ed50",
+      "name": "OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        272
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "JklUB02AKX2A1PiF",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "id": "df7b2164-0a03-4727-aeac-2f20f955259a",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "id": "f61c88d6-35c5-4932-b3f2-568034e8f47e",
+      "name": "Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        640,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/stock_price_details.csv",
+        "options": {}
+      },
+      "id": "74be58c7-e354-494e-9556-9ebc68a546f1",
+      "name": "Read stock_price_details.csv",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "globaledge-rag"
+        },
+        "options": {}
+      },
+      "id": "478ed28d-fa5c-4382-968e-3fe5975e7f74",
+      "name": "Ingest Stock Prices to Pinecone",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        656
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "MacUSoeaKEvskiAp",
+          "name": "PineconeApi account 791"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/sec_filings_10q.pdf",
+        "options": {}
+      },
+      "id": "d8d3288c-4ea8-4acc-8154-5178cc57d1d4",
+      "name": "Read sec_filings_10q.pdf",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "globaledge-rag"
+        },
+        "options": {}
+      },
+      "id": "89456033-808c-4bea-b6b2-955fc221f8de",
+      "name": "Ingest SEC Filings to Pinecone",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        768
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "MacUSoeaKEvskiAp",
+          "name": "PineconeApi account 791"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Read global_news.csv",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read stock_price_details.csv",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read sec_filings_10q.pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read global_news.csv": {
+      "main": [
+        [
+          {
+            "node": "Ingest News to Pinecone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Ingest News to Pinecone",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Ingest Stock Prices to Pinecone",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Ingest SEC Filings to Pinecone",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Ingest News to Pinecone",
+            "type": "ai_document",
+            "index": 0
+          },
+          {
+            "node": "Ingest Stock Prices to Pinecone",
+            "type": "ai_document",
+            "index": 0
+          },
+          {
+            "node": "Ingest SEC Filings to Pinecone",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read stock_price_details.csv": {
+      "main": [
+        [
+          {
+            "node": "Ingest Stock Prices to Pinecone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read sec_filings_10q.pdf": {
+      "main": [
+        [
+          {
+            "node": "Ingest SEC Filings to Pinecone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "e9d88fd6-a705-4db1-b9b6-f47d8272947c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9eec91ab028da3044b893ad93da376fcd67c0d37224cdead88c7c3ba95ce47dc"
+  },
+  "id": "U1jcj0G2SModTB8WyGDTu",
+  "tags": []
+}
